@@ -32,9 +32,10 @@ class SnowCoverage(object):
         self.has_bands(['quality'])
 
         quality = self['quality'].read()
-        cloud_high_conf = int('1100000000000000', 2)
-        snow_high_conf = int('0000110000000000', 2)
-        fill_pixels = int('0000000000000001', 2)
+        # new values for Collection 1 (see https://landsat.usgs.gov/collectionqualityband)
+        cloud_high_conf = int(2800)
+        snow_high_conf = int(3744)
+        fill_pixels = int(1)
         cloud_mask = np.bitwise_and(quality, cloud_high_conf) == cloud_high_conf
         snow_mask = np.bitwise_and(quality, snow_high_conf) == snow_high_conf
         fill_mask = np.bitwise_and(quality, fill_pixels) == fill_pixels
