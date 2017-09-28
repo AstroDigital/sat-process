@@ -32,10 +32,20 @@ class SnowCoverage(object):
         self.has_bands(['quality'])
 
         quality = self['quality'].read()
-        # new values for Collection 1 (see https://landsat.usgs.gov/collectionqualityband)
-        cloud_high_conf = int(2800)
-        snow_high_conf = int(3744)
-        fill_pixels = int(1)
+
+        # read metadata file to determine if collection 1 or collection 2
+        fname = self['quality'].filename.replace('_BQA.TIF', '_MTL.txt')
+        with open(fname) as f:
+            meta = ''.join(f.readlines())
+        if 'COLLECTION_NUMBER' in meta:
+            # new values for Collection 1 (see https://landsat.usgs.gov/collectionqualityband)
+            cloud_high_conf = int(2800)
+            snow_high_conf = int(3744)
+            fill_pixels = int(1)
+        else:
+            cloud_high_conf = int('1100000000000000', 2)
+            snow_high_conf = int('0000110000000000', 2)
+            fill_pixels = int('0000000000000001', 2)
         cloud_mask = np.bitwise_and(quality, cloud_high_conf) == cloud_high_conf
         snow_mask = np.bitwise_and(quality, snow_high_conf) == snow_high_conf
         fill_mask = np.bitwise_and(quality, fill_pixels) == fill_pixels
